@@ -7,6 +7,37 @@ app = Flask(__name__)
 
 # Load trained machine learning model
 model = joblib.load("model.pkl")
+# Load dataset for dashboard statistics
+df = pd.read_csv("WA_Fn-UseC_-Telco-Customer-Churn.csv")
+
+# Clean dataset
+df["TotalCharges"] = pd.to_numeric(
+    df["TotalCharges"],
+    errors="coerce"
+)
+
+df = df.dropna()
+
+# Convert Churn to numeric
+df["Churn"] = df["Churn"].map({
+    "Yes": 1,
+    "No": 0
+})
+
+# Dashboard statistics
+total_customers = len(df)
+
+churned_customers = int(df["Churn"].sum())
+
+retained_customers = total_customers - churned_customers
+
+churn_rate = (
+    churned_customers / total_customers
+) * 100
+
+average_monthly_charges = df["MonthlyCharges"].mean()
+
+average_tenure = df["tenure"].mean()
 
 html = """
 <!DOCTYPE html>
